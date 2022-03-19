@@ -1192,6 +1192,131 @@ def _algo_forward_fill(
 
     # "Return" list of modified item nodes
     item_placement.extend(filled_item_nodes)
+
+
+def _algo_calculate_spheres(
+    item_placement,
+    do_randomize_coins,
+    do_randomize_shops,
+    do_randomize_panels,
+    do_randomize_koopakoot,
+    do_randomize_letterchain,
+    do_randomize_dojo,
+    item_scarcity,
+    starting_map_id,
+    startwith_bluehouse_open,
+    startwith_flowergate_open,
+    startwith_toybox_open,
+    startwith_whale_open,
+    starting_partners,
+    speedyspin,
+    ispy,
+    peekaboo,
+    partners_always_usable,
+    partners_in_default_locations,
+    hidden_block_mode:int,
+    keyitems_outside_dungeon:bool,
+    starting_items:list,
+    world_graph = None
+):
+    # Prepare world graph if not provided
+    if world_graph is None:
+        print("Generating World Graph ...")
+        world_graph = generate_world_graph(None, None)
+
+    # Declare and init additional data structures
+    ## Data structures for graph traversal
+    all_item_nodes = []
+    reachable_node_ids = []
+    reachable_item_nodes = {}
+    non_traversable_edges = []
+    ## Data structures for item pool
+    pool_progression_items = []
+    pool_other_items = []
+    pool_misc_progression_items = []
+    filled_item_nodes = []
+
+    print("Initialize Mario's starting inventory...")
+    _init_mario_inventory(
+        starting_partners,
+        starting_items,
+        partners_always_usable,
+        hidden_block_mode,
+        startwith_bluehouse_open,
+        startwith_flowergate_open,
+        startwith_toybox_open,
+        startwith_whale_open
+    )
+
+    # Set node to start graph traversal from
+    starting_node_id = get_startingnode_id_from_startingmap_id(starting_map_id)
+    print(f'Starting map: {starting_node_id}')
+
+    # Find initially reachable nodes within the world graph
+    for edge in world_graph.get(starting_node_id).get("edge_list"):
+        non_traversable_edges.append(edge)
+    reachable_node_ids.append(starting_node_id)
+
+    from metadata.verbose_area_names import verbose_area_names
+    from metadata.verbose_item_names import verbose_item_names
+    from metadata.verbose_item_locations import verbose_item_locations
+    import os
+    from rando_modules.simulate import mario
+    item_order_file = open(os.path.abspath(__file__ + "/../../debug/item_spheres.txt"), "w", encoding="utf-8")
+    item_placement_map = {}
+    for n in item_placement:
+        item_placement_map[get_node_identifier(n)] = n
+    already_logged_items = set()
+    item_order_file.write('Sphere -1:\n')
+    for item in mario.item_history_2:
+        if item not in already_logged_items:
+            item_order_file.write('    %s\n' % item)
+            already_logged_items.add(item)
+    sphere = 0
+    while True:
+        pool_misc_progression_items, \
+        pool_other_items, \
+        reachable_node_ids, \
+        reachable_item_nodes, \
+        non_traversable_edges, \
+        filled_item_nodes = \
+        _find_new_nodes_and_edges(pool_misc_progression_items,
+                                  pool_other_items,
+                                  world_graph,
+                                  reachable_node_ids,
+                                  reachable_item_nodes,
+                                  non_traversable_edges,
+                                  filled_item_nodes)
+
+        if not reachable_item_nodes and not [item for item in mario.item_history_2 if item not in already_logged_items]:
+            break
+
+        item_order_file.write('\n')
+        item_order_file.write('Sphere %d Flags:\n' % sphere)
+        for item in mario.item_history_2:
+            if item not in already_logged_items:
+                item_order_file.write('    %s\n' % item)
+                already_logged_items.add(item)
+        item_order_file.write('Sphere %d Items:\n' % sphere)
+
+        if not reachable_item_nodes:
+            break
+
+        while reachable_item_nodes:
+            node = reachable_item_nodes.pop(next(iter(reachable_item_nodes)))
+            item = item_placement_map[get_node_identifier(node)].current_item
+            node_long_name = '%s - %s - %s'%(verbose_area_names[node.map_area.name[:3]], node.map_area.verbose_name, verbose_item_locations[node.map_area.name][node.key_name_item])
+            item_order_file.write('    (%s): %s\n' % (node_long_name, item.item_name))
+            add_to_inventory(item.item_name)
+            already_logged_items.add(item.item_name)
+        sphere += 1
+
+    item_order_file.close()
+
+    if has_item("YOUWIN"):
+        print("Seed verification: Beatable! Yay!")
+    else:
+        raise UnbeatableSeedError("Seed verification: Not beatable! Booo!")
     
 
 
@@ -1261,5 +1386,32 @@ def place_items(
             starting_items,
             world_graph
         )
+
+    print("... Calculating spheres ...")
+    _algo_calculate_spheres(
+        item_placement,
+        do_randomize_coins,
+        do_randomize_shops,
+        do_randomize_panels,
+        do_randomize_koopakoot,
+        do_randomize_letterchain,
+        do_randomize_dojo,
+        item_scarcity,
+        starting_map_id,
+        startwith_bluehouse_open,
+        startwith_flowergate_open,
+        startwith_toybox_open,
+        startwith_whale_open,
+        starting_partners,
+        speedyspin,
+        ispy,
+        peekaboo,
+        partners_always_usable,
+        partners_in_default_locations,
+        hidden_block_mode,
+        keyitems_outside_dungeon,
+        starting_items,
+        world_graph
+    )
 
     yield ("Generating Log", int(100 * 1))

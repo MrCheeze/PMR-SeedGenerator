@@ -103,7 +103,7 @@ QuizmoAlwaysAppears: false
 
 # Randomization: Partner
 PartnersInDefaultLocations: true
-PartnersAlwaysUsable      : true
+PartnersAlwaysUsable      : false
 StartWithRandomPartners   : false
 RandomPartnersMin         : 1 # 1-8
 RandomPartnersMax         : 1 # 1-8

@@ -20,6 +20,7 @@ class Mario:
         self.flags = kwargs.get("flags", [])
         self.starspirits = kwargs.get("starspirits", [])
         self.item_history = []
+        self.item_history_2 = []
 
 
 def add_to_inventory(item_object):
@@ -29,6 +30,8 @@ def add_to_inventory(item_object):
     global mario
     # Overload: Single item -> Add item
     if isinstance(item_object, str):
+        mario.item_history_2.append(item_object)
+
         is_new_pseudoitem = False
     
         if (   item_object.startswith("GF")
