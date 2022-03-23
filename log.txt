@@ -1,0 +1,67 @@
+Seed: 1774374252
+Generating World Graph ...
+Generating item pool...
+Initialize Mario's starting inventory...
+Starting map: MAC_00/4
+BUG!! Gave pseudoitems multiple times - ['DriedPasta']
+BUG!! Gave pseudoitems multiple times - ['DriedPasta']
+BUG!! Gave pseudoitems multiple times - ['DriedPasta']
+BUG!! Gave pseudoitems multiple times - ['DriedPasta']
+BUG!! Gave pseudoitems multiple times - ['StarPiece_MAC_5', 'StarPiece_MAC_6', 'StarPiece_MAC_7', 'StarPiece_MAC_8']
+BUG!! Gave pseudoitems multiple times - ['StarPiece_MAC_5', 'StarPiece_MAC_6', 'StarPiece_MAC_7', 'StarPiece_MAC_8']
+BUG!! Gave pseudoitems multiple times - ['StarPiece_MAC_5', 'StarPiece_MAC_6', 'StarPiece_MAC_7', 'StarPiece_MAC_8']
+Placing Progression Items ...
+Removing StarPieces temporarily ...
+BUG!! Gave pseudoitems multiple times - ['STARSPIRIT_5', 'MF_Ch5_RescuedStarSpirit']
+BUG!! Gave pseudoitems multiple times - ['STARSPIRIT_5', 'MF_Ch5_RescuedStarSpirit']
+Removing Letters from progressive pool ...
+Adding removed StarPieces back ...
+BUG!! Gave pseudoitems multiple times - ['StarPiece_MAC_9', 'StarPiece_MAC_10', 'StarPiece_MAC_11', 'StarPiece_MAC_12']
+BUG!! Gave pseudoitems multiple times - ['StarPiece_MAC_9', 'StarPiece_MAC_10', 'StarPiece_MAC_11', 'StarPiece_MAC_12']
+BUG!! Gave pseudoitems multiple times - ['StarPiece_MAC_9', 'StarPiece_MAC_10', 'StarPiece_MAC_11', 'StarPiece_MAC_12']
+Removing StarPieces from progressive pool ...
+BUG!! Gave pseudoitems multiple times - ['MB_Ch2_Spirit_ISK11_SolvedArtifactPuzzle']
+BUG!! Gave pseudoitems multiple times - ['RF_Ch6_SpokeWithTheSun']
+BUG!! Gave pseudoitems multiple times - ['GF_FLO23_GaveBlueBerry']
+BUG!! Gave pseudoitems multiple times - ['GF_FLO08_GaveYellowBerry']
+BUG!! Gave pseudoitems multiple times - ['GF_FLO25_GaveRedBerry']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_2_01_active']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_2_01_active']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_2_03_active']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_2_02_done']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_2_03_active']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_3_01_active']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_3_03_active']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_3_02_done']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_3_03_active']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_5_02_active']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_5_01_done']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_5_02_active']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_4_03_done']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_5_01_done']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_5_02_active']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_4_03_done']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_5_01_done']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_5_02_active']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_4_02_done']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_4_03_done']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_5_01_done']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_5_02_active']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_4_01_done']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_4_02_done']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_4_03_done']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_5_01_done']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_5_02_active']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_6_01_active']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_5_03_done']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_6_01_active']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_7_01_active']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_6_03_done']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_7_01_active']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_6_02_done']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_6_03_done']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_7_01_active']
+BUG!! Gave pseudoitems multiple times - ['FAVOR_7_02_done']
+Placing Miscellaneous Items ...
+Seed verification: Beatable! Yay!
+Seed generated in 4.48s

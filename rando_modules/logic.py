@@ -135,6 +135,9 @@ def _depth_first_search(
             logging.debug(f"DFS edge requirements fullfilled {edge}")
             # Add all pseudoitems provided by this edge to the inventory
             if edge.get("pseudoitems") is not None:
+                if 'has_given_pseudoitems' in edge:
+                    print(f'BUG!! Gave pseudoitems multiple times - {edge["pseudoitems"]}')
+                edge['has_given_pseudoitems'] = True
                 add_to_inventory(edge.get("pseudoitems"))
                 found_new_pseudoitems = True
 
