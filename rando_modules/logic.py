@@ -1486,7 +1486,6 @@ def _algo_assumed_fill(
         for dungeon in limited_by_item_areas:
             for itemlist in limited_by_item_areas[dungeon].values():
                 for item in itemlist:
-                    assert item not in area_restricted_items
                     area_restricted_items[item] = {dungeon}
 
     pool_combined_progression_items.sort(key=lambda x: x.item_name in area_restricted_items.keys())
