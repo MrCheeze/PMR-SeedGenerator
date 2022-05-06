@@ -89,8 +89,8 @@ class OptionSet:
         self.add_item_pouches = False
         self.placement_algorithm = "ForwardFill"
         self.placement_logic = "NoGlitches"
-        self.keyitems_outside_dungeon = True # False -> NYI
-        self.keyitems_outside_chapter = True # "Keysanity" # false -> NYI
+        self.keyitems_outside_dungeon = True
+        self.keyitems_outside_chapter = True
         self.allow_itemhints = True
         self.itemtrap_mode = 0
         # Mystery? item options

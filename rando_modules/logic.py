@@ -31,6 +31,7 @@ from metadata.itemlocation_special     \
            chainletter_giver_locations,\
            dojo_locations,             \
            limited_by_item_areas,      \
+           limited_by_chapter_items,   \
            bush_tree_coin_locations
 from metadata.progression_items                                 \
     import progression_miscitems as progression_miscitems_names, \
@@ -1420,6 +1421,7 @@ def _algo_assumed_fill(
     partners_in_default_locations,
     hidden_block_mode:int,
     keyitems_outside_dungeon:bool,
+    keyitems_outside_chapter:bool,
     starting_items:list,
     add_item_pouches:bool,
     shorten_bowsers_castle,
@@ -1475,15 +1477,19 @@ def _algo_assumed_fill(
     pool_combined_progression_items = pool_progression_items + pool_misc_progression_items
     random.shuffle(pool_combined_progression_items)
 
-    dungeon_restricted_items = {}
+    area_restricted_items = {}
+    if not keyitems_outside_chapter:
+        for areas, itemlist in limited_by_chapter_items:
+            for item in itemlist:
+                area_restricted_items[item] = areas
     if not keyitems_outside_dungeon:
         for dungeon in limited_by_item_areas:
             for itemlist in limited_by_item_areas[dungeon].values():
                 for item in itemlist:
-                    assert item not in dungeon_restricted_items
-                    dungeon_restricted_items[item] = dungeon
+                    assert item not in area_restricted_items
+                    area_restricted_items[item] = {dungeon}
 
-    pool_combined_progression_items.sort(key=lambda x: x.item_name in dungeon_restricted_items.keys())
+    pool_combined_progression_items.sort(key=lambda x: x.item_name in area_restricted_items.keys())
 
     while pool_combined_progression_items:
         item = pool_combined_progression_items.pop()
@@ -1509,10 +1515,10 @@ def _algo_assumed_fill(
         if item.item_name in progression_miscitems_names:
             candidate_locations = [node for node in candidate_locations if is_itemlocation_replenishable(node)]
 
-        if item.item_name in dungeon_restricted_items:
-            dungeon = dungeon_restricted_items[item.item_name]
-            candidate_locations = [node for node in candidate_locations if node.map_area.name[:3] == dungeon]
-            dungeon_restricted_items.pop(item.item_name)
+        if item.item_name in area_restricted_items:
+            allowed_areas = area_restricted_items[item.item_name]
+            candidate_locations = [node for node in candidate_locations if node.map_area.name[:3] in allowed_areas]
+            area_restricted_items.pop(item.item_name)
 
         if len(candidate_locations) == 0:
             raise UnbeatableSeedError("Failed to generate a beatable seed")
@@ -1741,6 +1747,7 @@ def place_items(
     partners_in_default_locations,
     hidden_block_mode:int,
     keyitems_outside_dungeon:bool,
+    keyitems_outside_chapter:bool,
     starting_items:list,
     add_item_pouches:list,
     shorten_bowsers_castle:bool,
@@ -1814,6 +1821,7 @@ def place_items(
             partners_in_default_locations,
             hidden_block_mode,
             keyitems_outside_dungeon,
+            keyitems_outside_chapter,
             starting_items,
             add_item_pouches,
             shorten_bowsers_castle,

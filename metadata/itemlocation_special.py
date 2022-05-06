@@ -151,6 +151,58 @@ limited_by_item_areas = {
         ]
     },
 }
+limited_by_chapter_items = [
+    ({"NOK","TRD"}, [
+        "KoopaFortressKeyA",
+        "KoopaFortressKeyB",
+        "KoopaFortressKeyC",
+        "KoopaFortressKeyD",
+    ]),
+    ({"IWA","DRO","SBK","ISK"}, [
+        "PulseStone",
+        "RuinsKeyA",
+        "RuinsKeyB",
+        "RuinsKeyC",
+        "RuinsKeyD",
+        "PyramidStone",
+        "DiamondStone",
+        "LunarStone",
+    ]),
+    ({"MIM","OBK","ARN","DGB"}, [
+        "BooPortrait",
+        "TubbaCastleKeyA",
+        "TubbaCastleKeyB",
+        "TubbaCastleKeyC",
+    ]),
+    ({"MAC","OMO"}, [
+        "ToyTrain",
+        "Dictionary",
+        "MysteryNote",
+    ]),
+    ({"JAN","KZN"}, [
+        "JadeRaven",
+    ]),
+    ({"FLO"}, [
+        "FertileSoil",
+        "MagicalBean",
+        "MiracleWater",
+    ]),
+    ({"SAM","PRA"}, [
+        "WarehouseKey",
+        "SnowmanBucket",
+        "SnowmanScarf",
+        "StarStone",
+        "RedKey",
+        "CrystalPalaceKey",
+    ]),
+    ({"HOS","KPA"}, [
+        "BowserCastleKeyA",
+        "BowserCastleKeyB",
+        "BowserCastleKeyC",
+        "BowserCastleKeyD",
+        "BowserCastleKeyE",
+    ]),
+]
 
 # Item locations that are considered 'limited by item type'.
 # 'Limited by item type' locations are only allowed to hold a items of a certain

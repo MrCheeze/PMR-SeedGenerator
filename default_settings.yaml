@@ -86,8 +86,8 @@ IncludeLetterChain    : false # true -> NYI
 ItemScarcity          : 0
 ItemTrapMode          : 0
 AddItemPouches        : false
-KeyitemsOutsideDungeon: false
-KeyitemsOutsideChapter: true # "Keysanity" # false -> NYI
+KeyitemsOutsideDungeon: true
+KeyitemsOutsideChapter: false
 AllowItemHints        : true
 # Mystery? item options
 RandomChoice     : true
@@ -123,8 +123,8 @@ SkipQuiz           : false
 QuizmoAlwaysAppears: false
 
 # Randomization: Partner
-PartnersInDefaultLocations: true
-PartnersAlwaysUsable      : true
+PartnersInDefaultLocations: false
+PartnersAlwaysUsable      : false
 StartWithRandomPartners   : false
 RandomPartnersMin         : 1 # 1-8
 RandomPartnersMax         : 1 # 1-8

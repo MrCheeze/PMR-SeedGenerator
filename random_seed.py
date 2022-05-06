@@ -91,6 +91,7 @@ class RandomSeed:
                     partners_in_default_locations=self.rando_settings.partners_in_default_locations,
                     hidden_block_mode=self.rando_settings.hidden_block_mode["value"],
                     keyitems_outside_dungeon=self.rando_settings.keyitems_outside_dungeon,
+                    keyitems_outside_chapter=self.rando_settings.keyitems_outside_chapter,
                     starting_items=self.starting_items,
                     add_item_pouches=self.rando_settings.add_item_pouches,
                     shorten_bowsers_castle=self.rando_settings.shorten_bowsers_castle["value"],
