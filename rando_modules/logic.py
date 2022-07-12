@@ -296,12 +296,10 @@ def _init_mario_inventory(
 
     if starting_boots == 2:
         mario.add_to_inventory("TornadoJump")
-    if starting_boots >= 1:
+    if starting_boots in [1,2]:
         mario.add_to_inventory("SpinJump")
-    #* Commented out, as -1 boots never affect logic
-    #if starting_boots >= 0:
-    #    mario.add_to_inventory("Jump")
-    mario.add_to_inventory("Jump")
+    if starting_boots in [0,1,2]:
+        mario.add_to_inventory("Jump")
     if starting_hammer == 2:
         mario.add_to_inventory("UltraHammer")
     if starting_hammer in [1,2]:
@@ -1009,6 +1007,9 @@ def _generate_item_pools(
     ))
     items_to_remove_from_pools.extend(starting_items)
 
+    if starting_boots == 0xFF:
+        pool_progression_items.append(Item.get(Item.item_name == "Jump"))
+
     for item in items_to_add_to_pools:
         if item.progression:
             pool_progression_items.append(item)
@@ -1660,8 +1661,8 @@ def _algo_assumed_fill(
             candidate_locations = [node for node in candidate_locations if node.map_area.name[:3] == dungeon]
             dungeon_restricted_items.pop(item.item_name)
 
-        if item.item_type == "GEAR":
-            candidate_locations = [node for node in candidate_locations if node.vanilla_item.item_type == "GEAR"]
+        #if item.item_type == "GEAR":
+        #    candidate_locations = [node for node in candidate_locations if node.vanilla_item.item_type == "GEAR"]
 
         if len(candidate_locations) == 0:
             raise UnbeatableSeedError("Failed to generate a beatable seed")

@@ -34,8 +34,8 @@ StartingMaxHP    : 10
 StartingMaxFP    : 5
 StartingMaxBP    : 3
 StartingStarPower: 0
-StartingBoots    : 0 # 1 Super, 2 Ultra
-StartingHammer   : 0 # -1 Hammerless, 0 Hammer, 1 Super, 2 Ultra
+StartingBoots    : -1 # -1 Bootless, 0 Boots, 1 Super, 2 Ultra
+StartingHammer   : -1 # -1 Hammerless, 0 Hammer, 1 Super, 2 Ultra
 
 StartWithRandomItems: false
 RandomItemsMin: 0
@@ -88,7 +88,7 @@ IncludeLettersMode    : 0 # 1=simpleLetters,2=vanillaChainRndChainReward,3=FullS
 IncludeRadioTradeEvent: false
 ItemScarcity          : 0
 ItemTrapMode          : 0
-BigChestShuffle       : false
+BigChestShuffle       : true
 AddItemPouches        : false
 KeyitemsOutsideDungeon: false
 KeyitemsOutsideChapter: true # "Keysanity" # false -> NYI
@@ -127,8 +127,8 @@ SkipQuiz           : false
 QuizmoAlwaysAppears: false
 
 # Randomization: Partner
-PartnersInDefaultLocations: true
-PartnersAlwaysUsable      : true
+PartnersInDefaultLocations: false
+PartnersAlwaysUsable      : false
 StartWithRandomPartners   : false
 RandomPartnersMin         : 1 # 1-8
 RandomPartnersMax         : 1 # 1-8

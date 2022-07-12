@@ -212,7 +212,7 @@ edges_kpa = [
     {"from": {"map": "KPA_53",  "id": 0}, "to": {"map": "KPA_102", "id": 1}, "reqs": []}, # Fake Peach Hallway Door Left -> Blue Fire Bridge Door Right
     {"from": {"map": "KPA_53",  "id": 1}, "to": {"map": "KPA_83",  "id": 0}, "reqs": []}, # Fake Peach Hallway Door Right -> Guard Door 3 Door Left
     
-    {"from": {"map": "KPA_53",  "id": 0}, "to": {"map": "KPA_53",  "id": 1}, "reqs": []}, #? Fake Peach Hallway Door Left -> Fake Peach Hallway Door Right
+    {"from": {"map": "KPA_53",  "id": 0}, "to": {"map": "KPA_53",  "id": 1}, "reqs": [["Boots","Hammer","Kooper","Bombette"]]}, #? Fake Peach Hallway Door Left -> Fake Peach Hallway Door Right
     {"from": {"map": "KPA_53",  "id": 1}, "to": {"map": "KPA_53",  "id": 0}, "reqs": []}, #? Fake Peach Hallway Door Right -> Fake Peach Hallway Door Left
 
     # KPA_60 Ship Enter/Exit Scenes

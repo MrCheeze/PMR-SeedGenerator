@@ -237,6 +237,10 @@ class Mario:
                             if len(self.boots) - 1 >= 1:
                                 group_fulfilled = True
                                 break
+                        elif req == "Boots":
+                            if len(self.boots) - 1 >= 0:
+                                group_fulfilled = True
+                                break
                     # Check hammer
                     if req.endswith("Hammer"):
                         if req == "UltraHammer":
