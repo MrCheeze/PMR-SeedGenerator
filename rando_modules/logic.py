@@ -1672,6 +1672,7 @@ def _algo_assumed_fill(
         pool_combined_progression_items.sort(key=lambda x: x.item_type == "GEAR")
     pool_combined_progression_items.sort(key=lambda x: x.item_name in dungeon_restricted_items.keys())
 
+    progression_nodes = []
     while pool_combined_progression_items:
         item = pool_combined_progression_items.pop()
         mario = _init_mario_inventory(
@@ -1717,9 +1718,46 @@ def _algo_assumed_fill(
         placement_location = random.choice(candidate_locations)
         placement_location.current_item = item
         node_identifier = placement_location.identifier
+        progression_nodes.append(placement_location)
 
         if "Shop" in node_identifier:
             placement_location.current_item.base_price = get_shop_price(placement_location, do_randomize_shops)
+
+    # Go through all the nodes again, and un-place items that aren't necessary to the seed's beatability.
+    random.shuffle(progression_nodes)
+    required_nodes = []
+    for item_node in progression_nodes:
+        if item_node.current_item:
+
+            node_item = item_node.current_item
+            item_node.current_item = None
+
+            mario = _init_mario_inventory(
+                starting_partners,
+                starting_items,
+                starting_boots,
+                starting_hammer,
+                partners_always_usable,
+                hidden_block_mode,
+                startwith_bluehouse_open,
+                magical_seeds_required,
+                startwith_toybox_open,
+                startwith_whale_open,
+                speedyspin
+            )
+            candidate_locations, mario = find_available_nodes(
+                world_graph,
+                starting_node_id,
+                mario
+            )
+
+            if "YOUWIN" in mario.items:
+                print(f"Moving unnecessary progression item {node_item} to junk pool.")
+                pool_other_items.append(node_item)
+            else:
+                item_node.current_item = node_item
+                required_nodes.append(item_node)
+
 
     # Mark all unreachable nodes, which hold pre-filled items, as filled
     for item_node in all_item_nodes:
@@ -1877,7 +1915,7 @@ def get_item_spheres(
         item_spheres_text += f'    ((Start) Mario\'s inventory): {item}{item_suffix}\n'
 
     sphere = 0
-    while True:
+    while item_placement_map:
         pool_misc_progression_items, \
         pool_other_items, \
         reachable_node_ids, \
@@ -1894,14 +1932,18 @@ def get_item_spheres(
                                   filled_item_nodes,
                                   mario)
 
-        if not reachable_item_nodes:
-            break
-
         item_spheres_text += '\n'
-        item_spheres_text += f'Sphere {sphere}:\n'        
+        if reachable_item_nodes:
+            item_spheres_text += f'Sphere {sphere}:\n'
+            nodes_to_print = list(reachable_item_nodes.values())
+        else:
+            item_spheres_text += f'Unreachable:\n'
+            nodes_to_print = list(item_placement_map.values())
 
-        for _, node in sorted(reachable_item_nodes.items()):
-            item = item_placement_map[node.identifier].current_item
+        nodes_to_print.sort(key=lambda node: (node.map_area.area_id, node.map_area.map_id, node.identifier))
+
+        for node in nodes_to_print:
+            item = item_placement_map.pop(node.identifier).current_item
             node_long_name = f'({verbose_area_names[node.map_area.name[:3]]}) {node.map_area.verbose_name} - {verbose_item_locations[node.map_area.name][node.key_name_item]}'
             item_verbose_name = verbose_item_names[item.item_name] if item.item_name in verbose_item_names else item.item_name
 
