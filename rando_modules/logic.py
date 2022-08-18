@@ -1617,7 +1617,8 @@ def _algo_assumed_fill(
     add_item_pouches:bool,
     bowsers_castle_mode:int,
     world_graph,
-    algorithm
+    algorithm,
+    world_graphs
 ):
 
     # Declare and init additional data structures
@@ -1734,92 +1735,49 @@ def _algo_assumed_fill(
         if "Shop" in node_identifier:
             placement_location.current_item.base_price = get_shop_price(placement_location, do_randomize_shops)
 
-    # Mark all unreachable nodes, which hold pre-filled items, as filled
-    for item_node in all_item_nodes:
-        if item_node.current_item:
-            filled_item_node_ids.add(item_node.identifier)
-
-    # Place all remaining items into still empty item nodes
-    print("Placing Miscellaneous Items ...")
-    random.shuffle(pool_other_items)
-
-    # Sort so shop nodes are in front to make sure those are filled with
-    # non-traps
-    all_item_nodes.sort(key=lambda x: x.is_shop(), reverse=True)
-
-    for item_node in all_item_nodes:
-        item_node_id = item_node.identifier
-
-        if (item_node_id == "KMR_06/ItemA"
-        and do_randomize_coins
-        and item_node_id not in filled_item_node_ids
-        ):
-            # Do not put coin on the Goomba Road sign due to glitchy graphics
-            item_index = -1
-            for i_item, item in enumerate(pool_other_items):
-                if item.item_name != "Coin":
-                    item_index = i_item
-
-            if item_index == -1:
-                # No non-coin item in item-pool: Just place a Mushroom
-                pool_other_items.pop()
-                random_item = Item.get(Item.item_name == "Mushroom")
-            else:
-                random_item = pool_other_items.pop(item_index)
-
-            item_node.current_item = random_item
-            filled_item_node_ids.add(item_node_id)
-            logging.debug(
-                "%s: %s",
-                item_node_id,
-                random_item.item_name
-            )
-            continue
-
-        if item_node_id not in filled_item_node_ids:
-            # Place random remaining item here
-            try:
-                random_item_id = random.randint(0, len(pool_other_items) - 1)
-                random_item = pool_other_items.pop(random_item_id)
-
-                if "Shop" in item_node_id or item_node_id in exclude_from_trap_placement:
-                    # Do not put item traps into shops or underwater -> it breaks otherwise!
-                    while random_item.is_trapped():
-                        pool_other_items.append(random_item)
-                        random_item_id = random.randint(0, len(pool_other_items) - 1)
-                        random_item = pool_other_items.pop(random_item_id)
-
-                item_node.current_item = random_item
-
-                if "Shop" in item_node_id:
-                    item_node.current_item.base_price = get_shop_price(item_node, do_randomize_shops)
-
-                filled_item_node_ids.add(item_node_id)
-                logging.debug(
-                    "%s: %s",
-                    item_node_id,
-                    random_item.item_name
-                )
-
-            except ValueError as err:
-                logging.warning(
-                    "filled_item_node_ids size: %d",
-                    len(filled_item_node_ids)
-                )
-                logging.warning(
-                    "pool_other_items size: %d",
-                    len(pool_other_items)
-                )
-                logging.warning(
-                    "nodes left: %d",
-                    len([item_node_id not in filled_item_node_ids])
-                )
-                #raise
-                item_node.current_item = item_node.vanilla_item
-                logging.warning("%s", item_node_id)
-
-    # "Return" list of modified item nodes
-    item_placement.extend([node for node in all_item_nodes if node.current_item])
+    mario = _init_mario_inventory(
+        starting_partners,
+        starting_items,
+        starting_boots,
+        starting_hammer,
+        partners_always_usable,
+        hidden_block_mode,
+        startwith_bluehouse_open,
+        magical_seeds_required,
+        startwith_toybox_open,
+        startwith_whale_open,
+        speedyspin
+    )
+    candidate_locations, mario = find_available_nodes(
+        world_graph,
+        starting_node_id,
+        mario
+    )
+    assert "YOUWIN" in mario.items
+    for setting, world_graph_ in world_graphs:
+        assert world_graph.keys() == world_graph_.keys()
+        for node in world_graph:
+            world_graph[node]['edge_list'] = world_graph_[node]['edge_list']
+        mario = _init_mario_inventory(
+            starting_partners,
+            starting_items,
+            starting_boots,
+            starting_hammer,
+            partners_always_usable,
+            hidden_block_mode,
+            startwith_bluehouse_open,
+            magical_seeds_required,
+            startwith_toybox_open,
+            startwith_whale_open,
+            speedyspin
+        )
+        candidate_locations, mario = find_available_nodes(
+            world_graph,
+            starting_node_id,
+            mario
+        )
+        print('glitch', setting, "YOUWIN" in mario.items)
+    raise UnbeatableSeedError("Failed to generate a beatable seed")
 
 
 def get_item_spheres(
@@ -1971,7 +1929,8 @@ def place_items(
     starting_items:list,
     add_item_pouches:list,
     bowsers_castle_mode:int,
-    world_graph = None
+    world_graph = None,
+    world_graphs=None
 ):
     """Places items into item locations according to chosen settings."""
     level = logging.INFO
@@ -2057,5 +2016,6 @@ def place_items(
             add_item_pouches,
             bowsers_castle_mode,
             world_graph,
-            algorithm
+            algorithm,
+            world_graphs
         )

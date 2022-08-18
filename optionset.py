@@ -1360,7 +1360,7 @@ class GlitchOptionSet():
             self.bombetteless_kbf_fp_plus_laki = False
             self.laki_jailbreak = False
             self.bombetteless_right_fortress_jail_key = False
-            self.water_staircase_skip = False
+            #self.water_staircase_skip = False
 
             self.mt_rugged_quake_hammer_and_letter_with_laki = False
             self.parakarryless_mt_rugged_seed = False

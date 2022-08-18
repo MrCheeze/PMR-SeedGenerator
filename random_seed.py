@@ -67,6 +67,15 @@ class RandomSeed:
             world_graph = get_gear_location_shuffle(world_graph)
 
         # Adjust graph logic if needed
+        world_graphs = []
+        print('...')
+        for setting in vars(self.rando_settings.glitch_settings):
+            glitch_settings_ = deepcopy(self.rando_settings.glitch_settings)
+            assert vars(glitch_settings_)[setting] == {'value': True}
+            vars(glitch_settings_)[setting]['value'] = False
+            world_graph_ = get_glitched_logic(deepcopy(world_graph), glitch_settings_, self.rando_settings.bowsers_castle_mode)
+            world_graphs.append((setting,world_graph_))
+        print('...')
         world_graph = get_glitched_logic(world_graph, self.rando_settings.glitch_settings, self.rando_settings.bowsers_castle_mode)
 
         hidden_block_mode = self.rando_settings.hidden_block_mode["value"]
@@ -75,7 +84,7 @@ class RandomSeed:
 
 
         # Item Placement
-        for placement_attempt in range(1, 11):  # try 10 times
+        for placement_attempt in range(1, 101):  # try 10 times
             try:
                 starting_chapter, starting_map_value = self.init_starting_map(self.rando_settings)
                 self.init_starting_partners(self.rando_settings)
@@ -120,7 +129,8 @@ class RandomSeed:
                     starting_items=[x for x in self.starting_items if x.item_type != "ITEM"],
                     add_item_pouches=self.rando_settings.add_item_pouches,
                     bowsers_castle_mode=self.rando_settings.bowsers_castle_mode["value"],
-                    world_graph=world_graph_copy
+                    world_graph=world_graph_copy,
+                    world_graphs=world_graphs
                 )
 
                 self.rando_settings.starting_map["value"] = starting_map_value # Overwrite starting map in case it was random at first
