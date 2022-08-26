@@ -2023,6 +2023,8 @@ def flatten_requirements(world_graph, starting_map_id):
                         pseudoitems_map['RF_SavedYoshiKid_3']['affects'].add(node_id)
                         pseudoitems_map['RF_SavedYoshiKid_4']['affects'].add(node_id)
                         pseudoitems_map['RF_SavedYoshiKid_5']['affects'].add(node_id)
+    for pseudoitem in pseudoitems_map:
+        pseudoitems_map[pseudoitem]['affects'] = list(sorted(pseudoitems_map[pseudoitem]['affects']))
 
     '''
     tautologies = _and(
@@ -2042,8 +2044,10 @@ def flatten_requirements(world_graph, starting_map_id):
     world_graph[starting_node_id]['full_reqs'] = pyeda.boolalg.expr.expr(True)
 
     should_update = {starting_node_id}
+    should_update_stack = [starting_node_id]
     while should_update:
-        node_id = should_update.pop()
+        node_id = should_update_stack.pop()
+        should_update.remove(node_id)
         for edge in world_graph[node_id]['edge_list']:
             edge_old_reqs = edge['full_reqs']
             edge_new_reqs = _normalize(_and(world_graph[node_id]['full_reqs'], _to_boolean_formula(edge['reqs'], pseudoitems_map)))
@@ -2055,7 +2059,9 @@ def flatten_requirements(world_graph, starting_map_id):
                 new_reqs = _normalize(_or(old_reqs, edge_new_reqs))
                 if not _equivalent(new_reqs, old_reqs):
                     world_graph[to_node_id]['full_reqs'] = new_reqs
-                    should_update.add(to_node_id)
+                    if to_node_id not in should_update:
+                        should_update.add(to_node_id)
+                        should_update_stack.append(to_node_id)
 
                 if "pseudoitems" in edge:
                     for pseudoitem in edge['pseudoitems']:
@@ -2064,7 +2070,9 @@ def flatten_requirements(world_graph, starting_map_id):
                         if not _equivalent(pseudoitem_new_reqs, pseudoitem_old_reqs):
                             pseudoitems_map[pseudoitem]['reqs'] = pseudoitem_new_reqs
                             for to_node_id in pseudoitems_map[pseudoitem]['affects']:
-                                should_update.add(to_node_id)
+                                if to_node_id not in should_update:
+                                    should_update.add(to_node_id)
+                                    should_update_stack.append(to_node_id)
 
     for node_id in world_graph:
         print(node_id, world_graph[node_id]['full_reqs'])
