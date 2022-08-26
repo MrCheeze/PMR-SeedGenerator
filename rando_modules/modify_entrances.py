@@ -29,6 +29,14 @@ from optionset import GlitchOptionSet
 # Glitched Logic - Prologue
 from maps.graph_edges.glitched_logic.kmr_prologue_gel_early import \
     edges_kmr_add_prologue_gel_early
+from maps.graph_edges.glitched_logic.kmr_reverse_goomba_king_bridge import \
+    edges_kmr_add_reverse_goomba_king_bridge
+from maps.graph_edges.glitched_logic.kmr_goomba_village_entry_fence_clip import \
+    edges_kmr_add_goomba_village_entry_fence_clip
+from maps.graph_edges.glitched_logic.kmr_goomba_village_hammerless_exit import \
+    edges_kmr_add_goomba_village_hammerless_exit_super_boots, edges_kmr_add_goomba_village_hammerless_exit_laki
+from maps.graph_edges.glitched_logic.kmr_hammerless_jr_playground_laki import \
+    edges_kmr_add_hammerless_jr_playground_laki
 
 # Glitched Logic - Toad Town
 from maps.graph_edges.glitched_logic.mac_odd_key_early import \
@@ -53,6 +61,10 @@ from maps.graph_edges.glitched_logic.tik_sewer_blocks_without_ultra_boots import
     edges_tik_add_sewer_blocks_without_ultra_boots
 from maps.graph_edges.glitched_logic.tik_clippy_boots import \
     edges_tik_add_clippy_boots_metal_block_skip, edges_tik_add_clippy_boots_stone_block_skip
+from maps.graph_edges.glitched_logic.tik_first_block_to_shiver_city_without_super_boots import \
+    edges_tik_add_first_block_to_shiver_city_witout_super_boots
+from maps.graph_edges.glitched_logic.tik_blocks_to_shiver_city_kooper_shell_item_throw import \
+    edges_tik_add_blocks_to_shiver_city_kooper_shell_item_throw
 
 # Glitched Logic - Pleasant Path
 from maps.graph_edges.glitched_logic.nok_kooperless_pleasant_path_star_piece import \
@@ -71,7 +83,7 @@ from maps.graph_edges.glitched_logic.trd_bombetteless_right_fortress_jail_key im
     edges_trd_add_bombetteless_right_key
 
 # Glitched Logic - Mt.Rugged
-from maps.graph_edges.glitched_logic.mt_rugged_quake_hammer_and_letter_laki import \
+from maps.graph_edges.glitched_logic.iwa_mt_rugged_quake_hammer_and_letter_laki import \
     edges_iwa_add_quake_hammer_and_letter_laki
 from maps.graph_edges.glitched_logic.iwa_parakarryless_mt_rugged_seed import \
     edges_iwa_add_parakarryless_mt_rugged_seed
@@ -79,6 +91,8 @@ from maps.graph_edges.glitched_logic.iwa_parakarryless_mt_rugged_star_piece impo
     edges_iwa_add_parakarryless_star_piece_laki
 from maps.graph_edges.glitched_logic.iwa_buzzar_gap_skip import \
     edges_iwa_add_buzzar_gap_skip_clippy
+from maps.graph_edges.glitched_logic.iwa_mt_rugged_coins_with_kooper import \
+    edges_iwa_add_mt_rugged_coins_with_kooper
 
 # Glitched Logic - Dry Dry Desert
 from maps.graph_edges.glitched_logic.sbk_desert_brick_block_item_with_parakarry import \
@@ -107,7 +121,7 @@ from maps.graph_edges.glitched_logic.obk_parakarryless_boos_portrait import \
     
 # Glitched Logic - Gusty Gulch
 from maps.graph_edges.glitched_logic.mim_gusty_gulch_gate_skip import \
-    edges_mim_add_gusty_gulch_gate_skip_lzs
+    edges_mim_add_gusty_gulch_gate_skip_lzs, edges_mim_add_gusty_gulch_gate_skip_laki
 from maps.graph_edges.glitched_logic.arn_gusty_gulch_gap_skip import \
     edges_arn_add_gusty_gulch_gap_skip_jump
 from maps.graph_edges.glitched_logic.arn_kooperless_gusty_gulch_dizzy_dial import \
@@ -132,6 +146,10 @@ from maps.graph_edges.glitched_logic.omo_bowless_green_station import \
     edges_omo_add_bowless_green_station_laki
 from maps.graph_edges.glitched_logic.omo_kooperless_red_station_shooting_star import \
     edges_omo_add_red_station_shooting_star_parakarry
+from maps.graph_edges.glitched_logic.omo_parakarryless_blue_block_city_gap import \
+    edges_omo_add_parakarryless_blue_block_city_gap
+from maps.graph_edges.glitched_logic.omo_blue_switch_skip import \
+    edges_omo_add_blue_switch_skip_laki
 
 # Glitched Logic - Jade Jungle
 from maps.graph_edges.glitched_logic.jan_raph_skip_english import \
@@ -188,6 +206,8 @@ from maps.graph_edges.glitched_logic.kmr_break_yellow_blocks_with_super_boots im
     edges_kmr_add_break_yellow_blocks_super_boots
 from maps.graph_edges.glitched_logic.global_knows_puzzle_solutions import \
     edges_global_knows_puzzle_solutions
+from maps.graph_edges.glitched_logic.global_reach_high_blocks_with_super_boots import \
+    edges_global_reach_high_blocks_with_super_boots
 
 def get_shorter_bowsercastle(world_graph: dict):
     """
@@ -281,6 +301,16 @@ def get_glitched_logic(world_graph: dict, glitch_settings: GlitchOptionSet, bows
     # Goomba Region
     if glitch_settings.prologue_gel_early["value"]:
         all_new_edges.extend(edges_kmr_add_prologue_gel_early)
+    if glitch_settings.reverse_goomba_king_bridge["value"]:
+        all_new_edges.extend(edges_kmr_add_reverse_goomba_king_bridge)
+    if glitch_settings.goomba_village_entry_fence_clip["value"]:
+        all_new_edges.extend(edges_kmr_add_goomba_village_entry_fence_clip)
+    if glitch_settings.goomba_village_super_boots_exit["value"]:
+        all_new_edges.extend(edges_kmr_add_goomba_village_hammerless_exit_super_boots)
+    if glitch_settings.goomba_village_laki_exit["value"]:
+        all_new_edges.extend(edges_kmr_add_goomba_village_hammerless_exit_laki)
+    if glitch_settings.hammerless_jr_playground_laki["value"]:
+        all_new_edges.extend(edges_kmr_add_hammerless_jr_playground_laki)
 
     # Toad Town
     if glitch_settings.odd_key_early["value"]:
@@ -313,6 +343,10 @@ def get_glitched_logic(world_graph: dict, glitch_settings: GlitchOptionSet, bows
         all_new_edges.extend(edges_tik_add_parakarryless_sewer_star_piece)
     if glitch_settings.sewer_blocks_without_ultra_boots["value"]:
         all_new_edges.extend(edges_tik_add_sewer_blocks_without_ultra_boots)
+    if glitch_settings.first_block_to_shiver_city_without_super_boots["value"]:
+        all_new_edges.extend(edges_tik_add_first_block_to_shiver_city_witout_super_boots)
+    if glitch_settings.blocks_to_shiver_city_kooper_shell_item_throw["value"]:
+        all_new_edges.extend(edges_tik_add_blocks_to_shiver_city_kooper_shell_item_throw)
 
     # Pleasant Path
     if glitch_settings.kooperless_pleasant_path_star_piece["value"]:
@@ -343,6 +377,8 @@ def get_glitched_logic(world_graph: dict, glitch_settings: GlitchOptionSet, bows
         all_new_edges.extend(edges_iwa_add_parakarryless_star_piece_laki)
     if glitch_settings.buzzar_gap_skip_clippy["value"]:
         all_new_edges.extend(edges_iwa_add_buzzar_gap_skip_clippy)
+    if glitch_settings.mt_rugged_coins_with_kooper["value"]:
+        all_new_edges.extend(edges_iwa_add_mt_rugged_coins_with_kooper)
 
     # Dry Dry Desert
     if glitch_settings.early_ruins_laki_jump["value"]:
@@ -381,6 +417,8 @@ def get_glitched_logic(world_graph: dict, glitch_settings: GlitchOptionSet, bows
     # Gusty Gulch
     if glitch_settings.gusty_gulch_gate_skip_lzs["value"]:
         all_new_edges.extend(edges_mim_add_gusty_gulch_gate_skip_lzs)
+    if glitch_settings.gusty_gulch_gate_skip_laki["value"]:
+        all_new_edges.extend(edges_mim_add_gusty_gulch_gate_skip_laki)
     if glitch_settings.kooperless_gusty_gulch_dizzy_dial_jump["value"]:
         all_new_edges.extend(edges_arn_add_gusty_gulch_dizzy_dial_jump)
     if glitch_settings.kooperless_gusty_gulch_dizzy_dial_laki["value"]:
@@ -413,6 +451,10 @@ def get_glitched_logic(world_graph: dict, glitch_settings: GlitchOptionSet, bows
         all_new_edges.extend(edges_omo_add_bowless_green_station_laki)
     if glitch_settings.kooperless_red_station_shooting_star["value"]:
         all_new_edges.extend(edges_omo_add_red_station_shooting_star_parakarry)
+    if glitch_settings.parakarryless_blue_block_city_gap["value"]:
+        all_new_edges.extend(edges_omo_add_parakarryless_blue_block_city_gap)
+    if glitch_settings.blue_switch_skip["value"]:
+        all_new_edges.extend(edges_omo_add_blue_switch_skip_laki)
 
     # Jade Jungle
     if glitch_settings.raph_skip_english["value"]:
@@ -490,6 +532,10 @@ def get_glitched_logic(world_graph: dict, glitch_settings: GlitchOptionSet, bows
         all_new_edges.extend(edges_kmr_add_break_yellow_blocks_super_boots)
     if glitch_settings.knows_puzzle_solutions["value"]:
         all_new_edges.extend(edges_global_knows_puzzle_solutions)
+    if glitch_settings.reach_high_blocks_with_super_boots["value"]:
+        all_new_edges.extend(edges_global_reach_high_blocks_with_super_boots)
+
+    print(all_new_edges)
 
     # Modify graph with all pending changes, if any
     if all_new_edges or all_edges_to_remove:

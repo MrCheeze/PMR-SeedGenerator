@@ -187,6 +187,11 @@ RandomPitch: false
 
 # Glitched Logic
 PrologueGelEarly                                : false
+ReverseGoombaKingBridge                         : false
+GoombaVillageEntryFenceClip                     : false
+GoombaVillageSuperBootsExit                     : false
+HammerlessJrPlaygroundLaki                      : false
+GoombaVillageLakiExit                           : false
 
 OddKeyEarly                                     : false
 BlueHouseSkip                                   : false
@@ -203,6 +208,8 @@ ClippyBootsMetalBlockSkip                       : false
 IslandPipeBlooperSkip                           : false
 ParakarrylessSewerStarPiece                     : false
 SewerBlocksWithoutUltraBoots                    : false
+FirstBlockToShiverCityWithoutSuperBoots         : false
+BlocksToShiverCityWithKooperShellItemThrow      : false
 
 KooperlessPleasantPathStarPiece                 : false
 InvisibleBridgeClipLzs                          : false
@@ -218,6 +225,7 @@ MtRuggedQuakeHammerAndLetterWithLaki            : false
 ParakarrylessMtRuggedSeed                       : false
 BuzzarGapSkipClippy                             : false
 ParakarrylessMtRuggedStarPiece                  : false
+MtRuggedCoinsWithKooper                         : false
 
 DesertBrickBlockItemWithParakarry               : false
 EarlyRuinsLakiJump                              : false
@@ -253,6 +261,8 @@ GourmetGuySkipLaki                              : false
 GourmetGuySkipParakarry                         : false
 BowlessGreenStation                             : false
 KooperlessRedStationShootingStar                : false
+ParakarrylessBlueBlockCityGap                   : false
+BlueSwitchSkip                                  : false
 
 RaphSkipEnglish                                 : false
 Ch5SushieGlitch                                 : false
@@ -292,3 +302,5 @@ BreakYellowBlocksWithSuperBoots                 : false
 BreakMetalBlocksWithUltraBoots                  : false
 KnowsHiddenBlocks                               : false
 KnowsPuzzleSolutions                            : false
+ReachHighBlocksWithSuperBoots                   : false
+GustyGulchGateSkipLaki                          : false
