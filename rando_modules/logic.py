@@ -1713,11 +1713,8 @@ def _algo_assumed_fill(
         for item_ in pool_combined_progression_items:
             mario.add_to_inventory(item_.item_name)
 
-        candidate_locations, mario = find_available_nodes(
-            world_graph,
-            starting_node_id,
-            mario
-        )
+        candidate_locations = [node for node in all_item_nodes if not node.current_item and mario.requirements_fulfilled(world_graph[node.identifier]['full_reqs'])]
+
         if item.item_name in progression_miscitems_names:
             candidate_locations = [node for node in candidate_locations if is_itemlocation_replenishable(node)]
 
@@ -1900,26 +1897,12 @@ def get_item_spheres(
 
     sphere = 0
     while item_placement_map:
-        pool_misc_progression_items, \
-        pool_other_items, \
-        reachable_node_ids, \
-        reachable_item_nodes, \
-        non_traversable_edges, \
-        filled_item_nodes, \
-        mario = \
-        _find_new_nodes_and_edges(pool_misc_progression_items,
-                                  pool_other_items,
-                                  world_graph,
-                                  reachable_node_ids,
-                                  reachable_item_nodes,
-                                  non_traversable_edges,
-                                  filled_item_nodes,
-                                  mario)
+        reachable_item_nodes = [node for (node_id, node) in item_placement_map.items() if mario.requirements_fulfilled(world_graph[node_id]['full_reqs'])]
 
         item_spheres_text += '\n'
         if reachable_item_nodes:
             item_spheres_text += f'Sphere {sphere}:\n'
-            nodes_to_print = list(reachable_item_nodes.values())
+            nodes_to_print = reachable_item_nodes
         else:
             item_spheres_text += f'Unreachable In Logic:\n'
             nodes_to_print = list(item_placement_map.values())
@@ -1944,7 +1927,6 @@ def get_item_spheres(
         reachable_item_nodes.clear()
         sphere += 1
 
-    assert "YOUWIN" in mario.items
     return item_spheres_text
 
 
@@ -1968,8 +1950,8 @@ special_reqs = {
     "can_flip_panels": _or(pyeda.boolalg.expr.exprvar("SuperBoots"), _and(pyeda.boolalg.expr.exprvar("Hammer"), pyeda.boolalg.expr.exprvar("SuperHammer"), pyeda.boolalg.expr.exprvar("UltraHammer"))),
     "can_shake_trees": _or(pyeda.boolalg.expr.exprvar("Hammer"), pyeda.boolalg.expr.exprvar("Bombette")),
     "can_hit_grounded_blocks": _or(pyeda.boolalg.expr.exprvar("Hammer"), pyeda.boolalg.expr.exprvar("Kooper"), pyeda.boolalg.expr.exprvar("Bombette"), pyeda.boolalg.expr.exprvar("SuperBoots")),
-    "can_see_hidden_blocks": pyeda.boolalg.expr.expr(True), # should depend on settings
     "can_end_sushie_glitch": pyeda.boolalg.expr.expr(True), # not actually correct
+    "can_see_hidden_blocks": pyeda.boolalg.expr.expr(True), # should depend on settings
     "RF_MagicalSeed1": pyeda.boolalg.expr.expr(False), # should depend on settings
     "RF_MagicalSeed2": pyeda.boolalg.expr.expr(False), # should depend on settings
     "RF_MagicalSeed3": pyeda.boolalg.expr.expr(False), # should depend on settings
@@ -2041,21 +2023,6 @@ def flatten_requirements(world_graph, starting_map_id):
                         pseudoitems_map['RF_SavedYoshiKid_4']['affects'].append(node_id)
                         pseudoitems_map['RF_SavedYoshiKid_5']['affects'].append(node_id)
 
-    '''
-    tautologies = _and(
-        pyeda.boolalg.expr.Implies(pyeda.boolalg.expr.exprvar("UltraBoots"), pyeda.boolalg.expr.exprvar("SuperBoots")),
-        pyeda.boolalg.expr.Implies(pyeda.boolalg.expr.exprvar("UltraBoots"), pyeda.boolalg.expr.exprvar("Boots")),
-        pyeda.boolalg.expr.Implies(pyeda.boolalg.expr.exprvar("SuperBoots"), pyeda.boolalg.expr.exprvar("Boots")),
-        pyeda.boolalg.expr.Implies(pyeda.boolalg.expr.exprvar("UltraHammer"), pyeda.boolalg.expr.exprvar("SuperHammer")),
-        pyeda.boolalg.expr.Implies(pyeda.boolalg.expr.exprvar("UltraHammer"), pyeda.boolalg.expr.exprvar("Hammer")),
-        pyeda.boolalg.expr.Implies(pyeda.boolalg.expr.exprvar("SuperHammer"), pyeda.boolalg.expr.exprvar("Hammer")),
-    )
-    for k, values in possible_dictreq_values.items():
-        for value in values:
-            tautologies = _and(tautologies, *[pyeda.boolalg.expr.Implies(pyeda.boolalg.expr.exprvar(str({k:value})), pyeda.boolalg.expr.exprvar(str({k:value2}))) for value2 in values if value2 < value])
-    tautologies = _normalize(tautologies)
-    '''
-
     world_graph[starting_node_id]['full_reqs'] = pyeda.boolalg.expr.expr(True)
 
     should_update = {starting_node_id}
@@ -2091,9 +2058,6 @@ def flatten_requirements(world_graph, starting_map_id):
 
     for node_id in world_graph:
         print(node_id, world_graph[node_id]['full_reqs'])
-        del world_graph[node_id]['full_reqs']
-        for edge in world_graph[node_id]['edge_list']:
-            del edge['full_reqs']
 
     print("Done flattening.", time.time() - start)
 

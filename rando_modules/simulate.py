@@ -4,6 +4,7 @@ This is required for checking randomization logic.
 """
 
 from metadata.partners_meta import all_partners
+import pyeda
 
 class Mario:
     """
@@ -214,10 +215,27 @@ class Mario:
         # conditions met to count as fulfilled.
         # This effectively ANDs all requirement groups, and ORs all conditions
         # within a given requirement group.
-        for req_group in all_reqs:
-            assert(isinstance(req_group, list))
+        if type(all_reqs) is pyeda.boolalg.expr.AndOp:
+            foo = all_reqs.xs
+        elif type(all_reqs) is pyeda.boolalg.expr._One:
+            return True
+        elif type(all_reqs) is pyeda.boolalg.expr._Zero:
+            return False
+        else:
+            foo = [all_reqs]
+        for req_group in foo:
+            if type(req_group) is pyeda.boolalg.expr.OrOp:
+                bar = req_group.xs
+            else:
+                bar = [req_group]
             group_fulfilled = False
-            for req in req_group:
+            for req in bar:
+                if type(req) is not pyeda.boolalg.expr.Variable:
+                    print(all_reqs, req)
+                assert type(req) is pyeda.boolalg.expr.Variable
+                req = str(req)
+                if req[0] == "{":
+                    req = eval(req)
                 if isinstance(req, dict):
                     # Check star spirits
                     if ("starspirits" in req

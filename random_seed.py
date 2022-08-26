@@ -90,7 +90,6 @@ class RandomSeed:
 
                 self.init_starting_items(self.rando_settings, magical_seeds_required)
 
-                world_graph_copy = deepcopy(world_graph)
                 place_items(
                     item_placement= self.placed_items,
                     algorithm=self.rando_settings.placement_algorithm,
@@ -124,7 +123,7 @@ class RandomSeed:
                     starting_items=[x for x in self.starting_items if x.item_type != "ITEM"],
                     add_item_pouches=self.rando_settings.add_item_pouches,
                     bowsers_castle_mode=self.rando_settings.bowsers_castle_mode["value"],
-                    world_graph=world_graph_copy
+                    world_graph=world_graph
                 )
 
                 self.rando_settings.starting_map["value"] = starting_map_value # Overwrite starting map in case it was random at first
@@ -133,7 +132,7 @@ class RandomSeed:
 
             except UnbeatableSeedError as err:
                 print(f"Failed to place items! Fail count: {placement_attempt}")
-
+                1/0 # not tested with flattened req changes
         
         # Modify Mystery? item
         self.rando_settings.mystery_settings = get_random_mystery(
