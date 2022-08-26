@@ -1965,16 +1965,39 @@ def _and(*args):
     return pyeda.boolalg.expr.And(*args)
 
 special_reqs = {
-    "can_flip_panels": _or(pyeda.boolalg.expr.exprvar("SuperBoots"), pyeda.boolalg.expr.exprvar("UltraHammer")),
+    "can_flip_panels": _or(pyeda.boolalg.expr.exprvar("SuperBoots"), _and(pyeda.boolalg.expr.exprvar("Hammer"), pyeda.boolalg.expr.exprvar("SuperHammer"), pyeda.boolalg.expr.exprvar("UltraHammer"))),
     "can_shake_trees": _or(pyeda.boolalg.expr.exprvar("Hammer"), pyeda.boolalg.expr.exprvar("Bombette")),
     "can_hit_grounded_blocks": _or(pyeda.boolalg.expr.exprvar("Hammer"), pyeda.boolalg.expr.exprvar("Kooper"), pyeda.boolalg.expr.exprvar("Bombette"), pyeda.boolalg.expr.exprvar("SuperBoots")),
-    "can_see_hidden_blocks": _or(pyeda.boolalg.expr.exprvar("Watt"), pyeda.boolalg.expr.exprvar("RF_HiddenBlocksVisible")),
+    "can_see_hidden_blocks": pyeda.boolalg.expr.expr(True), # should depend on settings
+    "can_end_sushie_glitch": pyeda.boolalg.expr.expr(True), # not actually correct
+    "RF_MagicalSeed1": pyeda.boolalg.expr.expr(False), # should depend on settings
+    "RF_MagicalSeed2": pyeda.boolalg.expr.expr(False), # should depend on settings
+    "RF_MagicalSeed3": pyeda.boolalg.expr.expr(False), # should depend on settings
+    "RF_MagicalSeed4": pyeda.boolalg.expr.expr(False), # should depend on settings
+    "RF_ToyboxOpen": pyeda.boolalg.expr.expr(False), # should depend on settings
+    "RF_OutOfLogic": pyeda.boolalg.expr.expr(False),
+    "RF_Missable": pyeda.boolalg.expr.expr(False),
+    "UltraHammer": _and(pyeda.boolalg.expr.exprvar("Hammer"), pyeda.boolalg.expr.exprvar("SuperHammer"), pyeda.boolalg.expr.exprvar("UltraHammer")),
+    "SuperHammer": _and(pyeda.boolalg.expr.exprvar("Hammer"), pyeda.boolalg.expr.exprvar("SuperHammer")),
+    "UltraBoots": _and(pyeda.boolalg.expr.exprvar("SuperBoots"), pyeda.boolalg.expr.exprvar("UltraBoots")),
+    str({"TubbaCastleKey": 3}): _and(*[pyeda.boolalg.expr.exprvar(str({"TubbaCastleKey": i+1})) for i in range(3)]),
+    str({"TubbaCastleKey": 2}): _and(*[pyeda.boolalg.expr.exprvar(str({"TubbaCastleKey": i+1})) for i in range(2)]),
+    str({"RuinsKey": 4}): _and(*[pyeda.boolalg.expr.exprvar(str({"RuinsKey": i+1})) for i in range(4)]),
+    str({"RuinsKey": 3}): _and(*[pyeda.boolalg.expr.exprvar(str({"RuinsKey": i+1})) for i in range(3)]),
+    str({"RuinsKey": 2}): _and(*[pyeda.boolalg.expr.exprvar(str({"RuinsKey": i+1})) for i in range(2)]),
+    str({"BowserCastleKey": 5}): _and(*[pyeda.boolalg.expr.exprvar(str({"BowserCastleKey": i+1})) for i in range(5)]),
+    str({"BowserCastleKey": 4}): _and(*[pyeda.boolalg.expr.exprvar(str({"BowserCastleKey": i+1})) for i in range(4)]),
+    str({"BowserCastleKey": 3}): _and(*[pyeda.boolalg.expr.exprvar(str({"BowserCastleKey": i+1})) for i in range(3)]),
+    str({"BowserCastleKey": 2}): _and(*[pyeda.boolalg.expr.exprvar(str({"BowserCastleKey": i+1})) for i in range(2)]),
+    str({"KoopaFortressKey": 4}): _and(*[pyeda.boolalg.expr.exprvar(str({"KoopaFortressKey": i+1})) for i in range(4)]),
+    str({"KoopaFortressKey": 3}): _and(*[pyeda.boolalg.expr.exprvar(str({"KoopaFortressKey": i+1})) for i in range(3)]),
+    str({"KoopaFortressKey": 2}): _and(*[pyeda.boolalg.expr.exprvar(str({"KoopaFortressKey": i+1})) for i in range(2)]),
 }
 def _req_to_expr(req, pseudoitems_map):
     if type(req) is str and req in pseudoitems_map:
         return pseudoitems_map[req]['reqs']
-    elif type(req) is str and req in special_reqs:
-        return special_reqs[req]
+    elif str(req) in special_reqs:
+        return special_reqs[str(req)]
     elif req == "saved_all_yoshikids":
         return _and(*[pseudoitems_map[f"RF_SavedYoshiKid_{i+1}"]['reqs'] for i in range(5)])
     else:
@@ -1990,12 +2013,10 @@ def _equivalent(expr1, expr2):
 # Should this stuff be in worldgraph.py ?
 def flatten_requirements(world_graph, starting_map_id):
     start = time.time()
-    world_graph = deepcopy(world_graph)
     starting_node_id = get_startingnode_id_from_startingmap_id(starting_map_id)
     print("Flattening requirements...", starting_node_id)
 
     pseudoitems_map = {}
-    possible_dictreq_values = defaultdict(set)
     for node_id in world_graph:
         world_graph[node_id]['full_reqs'] = pyeda.boolalg.expr.expr(False)
         for edge in world_graph[node_id]['edge_list']:
@@ -2006,25 +2027,19 @@ def flatten_requirements(world_graph, starting_map_id):
                         pseudoitem_reqs = pyeda.boolalg.expr.exprvar(pseudoitem)
                     else:
                         pseudoitem_reqs = pyeda.boolalg.expr.expr(False)
-                    pseudoitems_map[pseudoitem] = {'reqs':pseudoitem_reqs, 'affects':set()}
+                    pseudoitems_map[pseudoitem] = {'reqs':pseudoitem_reqs, 'affects':[]}
     for node_id in world_graph:
         for edge in world_graph[node_id]['edge_list']:
             for or_reqs in edge['reqs']:
                 for req in or_reqs:
                     if type(req) is str and req in pseudoitems_map:
-                        pseudoitems_map[req]['affects'].add(node_id)
-                    if type(req) is dict:
-                        assert len(req) == 1
-                        (k, v), = req.items()
-                        possible_dictreq_values[k].add(v)
+                        pseudoitems_map[req]['affects'].append(node_id)
                     if req == "saved_all_yoshikids":
-                        pseudoitems_map['RF_SavedYoshiKid_1']['affects'].add(node_id)
-                        pseudoitems_map['RF_SavedYoshiKid_2']['affects'].add(node_id)
-                        pseudoitems_map['RF_SavedYoshiKid_3']['affects'].add(node_id)
-                        pseudoitems_map['RF_SavedYoshiKid_4']['affects'].add(node_id)
-                        pseudoitems_map['RF_SavedYoshiKid_5']['affects'].add(node_id)
-    for pseudoitem in pseudoitems_map:
-        pseudoitems_map[pseudoitem]['affects'] = list(sorted(pseudoitems_map[pseudoitem]['affects']))
+                        pseudoitems_map['RF_SavedYoshiKid_1']['affects'].append(node_id)
+                        pseudoitems_map['RF_SavedYoshiKid_2']['affects'].append(node_id)
+                        pseudoitems_map['RF_SavedYoshiKid_3']['affects'].append(node_id)
+                        pseudoitems_map['RF_SavedYoshiKid_4']['affects'].append(node_id)
+                        pseudoitems_map['RF_SavedYoshiKid_5']['affects'].append(node_id)
 
     '''
     tautologies = _and(
@@ -2076,6 +2091,9 @@ def flatten_requirements(world_graph, starting_map_id):
 
     for node_id in world_graph:
         print(node_id, world_graph[node_id]['full_reqs'])
+        del world_graph[node_id]['full_reqs']
+        for edge in world_graph[node_id]['edge_list']:
+            del edge['full_reqs']
 
     print("Done flattening.", time.time() - start)
 
