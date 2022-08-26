@@ -1948,6 +1948,131 @@ def get_item_spheres(
     return item_spheres_text
 
 
+import pyeda.boolalg.expr
+import time
+from functools import lru_cache
+
+@lru_cache(maxsize=None)
+def _normalize(expr):
+    return expr.to_cnf()
+
+@lru_cache(maxsize=None)
+def _or(*args):
+    return pyeda.boolalg.expr.Or(*args)
+
+@lru_cache(maxsize=None)
+def _and(*args):
+    return pyeda.boolalg.expr.And(*args)
+
+special_reqs = {
+    "can_flip_panels": _or(pyeda.boolalg.expr.exprvar("SuperBoots"), pyeda.boolalg.expr.exprvar("UltraHammer")),
+    "can_shake_trees": _or(pyeda.boolalg.expr.exprvar("Hammer"), pyeda.boolalg.expr.exprvar("Bombette")),
+    "can_hit_grounded_blocks": _or(pyeda.boolalg.expr.exprvar("Hammer"), pyeda.boolalg.expr.exprvar("Kooper"), pyeda.boolalg.expr.exprvar("Bombette"), pyeda.boolalg.expr.exprvar("SuperBoots")),
+    "can_see_hidden_blocks": _or(pyeda.boolalg.expr.exprvar("Watt"), pyeda.boolalg.expr.exprvar("RF_HiddenBlocksVisible")),
+}
+def _req_to_expr(req, pseudoitems_map):
+    if type(req) is str and req in pseudoitems_map:
+        return pseudoitems_map[req]['reqs']
+    elif type(req) is str and req in special_reqs:
+        return special_reqs[req]
+    elif req == "saved_all_yoshikids":
+        return _and(*[pseudoitems_map[f"RF_SavedYoshiKid_{i+1}"]['reqs'] for i in range(5)])
+    else:
+        return pyeda.boolalg.expr.exprvar(str(req))
+
+def _to_boolean_formula(and_reqs, pseudoitems_map):
+    return _and(*[_or(*[_req_to_expr(req, pseudoitems_map) for req in or_reqs]) for or_reqs in and_reqs])
+
+@lru_cache(maxsize=None)
+def _equivalent(expr1, expr2):
+    return expr1.equivalent(expr2)
+
+# Should this stuff be in worldgraph.py ?
+def flatten_requirements(world_graph, starting_map_id):
+    start = time.time()
+    world_graph = deepcopy(world_graph)
+    starting_node_id = get_startingnode_id_from_startingmap_id(starting_map_id)
+    print("Flattening requirements...", starting_node_id)
+
+    pseudoitems_map = {}
+    possible_dictreq_values = defaultdict(set)
+    for node_id in world_graph:
+        world_graph[node_id]['full_reqs'] = pyeda.boolalg.expr.expr(False)
+        for edge in world_graph[node_id]['edge_list']:
+            edge['full_reqs'] = pyeda.boolalg.expr.expr(False)
+            if "pseudoitems" in edge:
+                for pseudoitem in edge['pseudoitems']:
+                    if pseudoitem in progression_miscitems_names:
+                        pseudoitem_reqs = pyeda.boolalg.expr.exprvar(pseudoitem)
+                    else:
+                        pseudoitem_reqs = pyeda.boolalg.expr.expr(False)
+                    pseudoitems_map[pseudoitem] = {'reqs':pseudoitem_reqs, 'affects':set()}
+    for node_id in world_graph:
+        for edge in world_graph[node_id]['edge_list']:
+            for or_reqs in edge['reqs']:
+                for req in or_reqs:
+                    if type(req) is str and req in pseudoitems_map:
+                        pseudoitems_map[req]['affects'].add(node_id)
+                    if type(req) is dict:
+                        assert len(req) == 1
+                        (k, v), = req.items()
+                        possible_dictreq_values[k].add(v)
+                    if req == "saved_all_yoshikids":
+                        pseudoitems_map['RF_SavedYoshiKid_1']['affects'].add(node_id)
+                        pseudoitems_map['RF_SavedYoshiKid_2']['affects'].add(node_id)
+                        pseudoitems_map['RF_SavedYoshiKid_3']['affects'].add(node_id)
+                        pseudoitems_map['RF_SavedYoshiKid_4']['affects'].add(node_id)
+                        pseudoitems_map['RF_SavedYoshiKid_5']['affects'].add(node_id)
+
+    '''
+    tautologies = _and(
+        pyeda.boolalg.expr.Implies(pyeda.boolalg.expr.exprvar("UltraBoots"), pyeda.boolalg.expr.exprvar("SuperBoots")),
+        pyeda.boolalg.expr.Implies(pyeda.boolalg.expr.exprvar("UltraBoots"), pyeda.boolalg.expr.exprvar("Boots")),
+        pyeda.boolalg.expr.Implies(pyeda.boolalg.expr.exprvar("SuperBoots"), pyeda.boolalg.expr.exprvar("Boots")),
+        pyeda.boolalg.expr.Implies(pyeda.boolalg.expr.exprvar("UltraHammer"), pyeda.boolalg.expr.exprvar("SuperHammer")),
+        pyeda.boolalg.expr.Implies(pyeda.boolalg.expr.exprvar("UltraHammer"), pyeda.boolalg.expr.exprvar("Hammer")),
+        pyeda.boolalg.expr.Implies(pyeda.boolalg.expr.exprvar("SuperHammer"), pyeda.boolalg.expr.exprvar("Hammer")),
+    )
+    for k, values in possible_dictreq_values.items():
+        for value in values:
+            tautologies = _and(tautologies, *[pyeda.boolalg.expr.Implies(pyeda.boolalg.expr.exprvar(str({k:value})), pyeda.boolalg.expr.exprvar(str({k:value2}))) for value2 in values if value2 < value])
+    tautologies = _normalize(tautologies)
+    '''
+
+    world_graph[starting_node_id]['full_reqs'] = pyeda.boolalg.expr.expr(True)
+
+    should_update = {starting_node_id}
+    while should_update:
+        node_id = should_update.pop()
+        for edge in world_graph[node_id]['edge_list']:
+            edge_old_reqs = edge['full_reqs']
+            edge_new_reqs = _normalize(_and(world_graph[node_id]['full_reqs'], _to_boolean_formula(edge['reqs'], pseudoitems_map)))
+            if not _equivalent(edge_new_reqs, edge_old_reqs):
+                edge['full_reqs'] = edge_new_reqs
+
+                to_node_id = get_edge_target_node_id(edge)
+                old_reqs = world_graph[to_node_id]['full_reqs']
+                new_reqs = _normalize(_or(old_reqs, edge_new_reqs))
+                if not _equivalent(new_reqs, old_reqs):
+                    world_graph[to_node_id]['full_reqs'] = new_reqs
+                    should_update.add(to_node_id)
+
+                if "pseudoitems" in edge:
+                    for pseudoitem in edge['pseudoitems']:
+                        pseudoitem_old_reqs = pseudoitems_map[pseudoitem]['reqs']
+                        pseudoitem_new_reqs = _normalize(_or(pseudoitem_old_reqs, edge_new_reqs))
+                        if not _equivalent(pseudoitem_new_reqs, pseudoitem_old_reqs):
+                            pseudoitems_map[pseudoitem]['reqs'] = pseudoitem_new_reqs
+                            for to_node_id in pseudoitems_map[pseudoitem]['affects']:
+                                should_update.add(to_node_id)
+
+    for node_id in world_graph:
+        print(node_id, world_graph[node_id]['full_reqs'])
+
+    print("Done flattening.", time.time() - start)
+
+
+
 def place_items(
     item_placement,
     algorithm,

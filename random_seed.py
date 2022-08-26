@@ -4,7 +4,7 @@ import random
 from itemhints import get_itemhints
 from models.CoinPalette import CoinPalette
 from optionset import OptionSet
-from rando_modules.logic import place_items, get_item_spheres, get_items_to_exclude
+from rando_modules.logic import place_items, get_item_spheres, get_items_to_exclude, flatten_requirements
 from rando_modules.random_blocks import get_block_placement
 from rando_modules.random_actor_stats import get_shuffled_chapter_difficulty
 from rando_modules.modify_entrances import \
@@ -78,6 +78,8 @@ class RandomSeed:
         for placement_attempt in range(1, 11):  # try 10 times
             try:
                 starting_chapter, starting_map_value = self.init_starting_map(self.rando_settings)
+                flatten_requirements(world_graph, starting_map_value)
+
                 self.init_starting_partners(self.rando_settings)
 
                 # Pick seeds required for flower gate, if random
