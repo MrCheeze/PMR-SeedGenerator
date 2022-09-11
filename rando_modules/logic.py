@@ -824,6 +824,68 @@ def _algo_assumed_fill(
         pool_combined_progression_items.sort(key=lambda x: x.item_type == "GEAR")
     pool_combined_progression_items.sort(key=lambda x: x.item_name in dungeon_restricted_items.keys())
 
+    import itertools
+    multikey_doors = defaultdict(set)
+    for node_id in world_graph:
+        for edge in world_graph[node_id]['edge_list']:
+            for reqlist in edge['reqs']:
+                for req in reqlist:
+                    if type(req) is dict:
+                        for k in req:
+                            if k[0].isupper(): # matcch e.g. KoopaFortressKey, but not starspirits
+                                multikey_doors[k].add((get_edge_origin_node_id(edge), get_edge_target_node_id(edge)))
+    for keyname, door_list in multikey_doors.items():
+        assert 1 <= len(door_list) <= 5
+        possible_door_orders = []
+        for ordered_door_list in itertools.permutations(door_list):
+            mario = MarioInventory(
+                starting_boots,
+                starting_hammer,
+                starting_partners,
+                starting_items,
+                partners_always_usable,
+                hidden_block_mode,
+                magical_seeds_required,
+                startwith_bluehouse_open,
+                startwith_toybox_open,
+                startwith_whale_open,
+                speedyspin,
+                cook_without_fryingpan
+            )
+            for item in pool_combined_progression_items:
+                if not item.item_name.startswith(keyname):
+                    mario.add(item.item_name)
+
+            reachable_node_ids = set()
+            reachable_item_nodes = {}
+            non_traversable_edges = defaultdict(set)
+            filled_item_node_ids = set()
+
+            reachable_node_ids.add(starting_node_id)
+            for edge in world_graph[starting_node_id]["edge_list"]:
+                non_traversable_edges[starting_node_id].add(edge)
+
+            for door_from_node, door_to_node in ordered_door_list:
+
+                empty_reachables, mario = find_empty_reachable_nodes(
+                    world_graph,
+                    reachable_node_ids,
+                    reachable_item_nodes,
+                    non_traversable_edges,
+                    filled_item_node_ids,
+                    mario
+                )
+
+                if door_from_node not in reachable_node_ids:
+                    break # this permutation of door opening orders is not possible
+
+                reachable_node_ids.add(door_to_node)
+                for edge in world_graph[door_to_node]["edge_list"]:
+                    non_traversable_edges[door_to_node].add(edge)
+
+            else: # this permutation of door opening orders is possible
+                print(keyname, ordered_door_list, 'is possible')
+
     while pool_combined_progression_items:
         item = pool_combined_progression_items.pop()
         mario = MarioInventory(
