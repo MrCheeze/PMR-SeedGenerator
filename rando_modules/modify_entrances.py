@@ -660,37 +660,30 @@ def adjust_rip_cheato_pricing(world_graph: dict, checks_in_logic:int):
     return world_graph
 
 
-def get_race_mode(world_graph: dict, non_required_chapters: list, required_chapter_count: int):
+def get_race_mode(world_graph: dict, chapter_changes:dict):
     all_new_edges = []
     all_edges_to_remove = []
 
-    if 1 in non_required_chapters:
-        all_new_edges.extend(get_edges_ch1_add(required_chapter_count))
-        all_edges_to_remove.extend(edges_ch1_remove)
+    all_new_edges.extend(get_edges_ch1_add(chapter_changes[1]-1))
+    all_edges_to_remove.extend(edges_ch1_remove)
 
-    if 2 in non_required_chapters:
-        all_new_edges.extend(get_edges_ch2_add(required_chapter_count))
-        all_edges_to_remove.extend(edges_ch2_remove)
+    all_new_edges.extend(get_edges_ch2_add(chapter_changes[2]-1))
+    all_edges_to_remove.extend(edges_ch2_remove)
 
-    if 3 in non_required_chapters:
-        all_new_edges.extend(get_edges_ch3_add(required_chapter_count))
-        all_edges_to_remove.extend(edges_ch3_remove)
+    all_new_edges.extend(get_edges_ch3_add(chapter_changes[3]-1))
+    all_edges_to_remove.extend(edges_ch3_remove)
 
-    if 4 in non_required_chapters:
-        all_new_edges.extend(get_edges_ch4_add(required_chapter_count))
-        all_edges_to_remove.extend(edges_ch4_remove)
+    all_new_edges.extend(get_edges_ch4_add(chapter_changes[4]-1))
+    all_edges_to_remove.extend(edges_ch4_remove)
 
-    if 5 in non_required_chapters:
-        all_new_edges.extend(get_edges_ch5_add(required_chapter_count))
-        all_edges_to_remove.extend(edges_ch5_remove)
+    all_new_edges.extend(get_edges_ch5_add(chapter_changes[5]-1))
+    all_edges_to_remove.extend(edges_ch5_remove)
 
-    if 6 in non_required_chapters:
-        all_new_edges.extend(get_edges_ch6_add(required_chapter_count))
-        all_edges_to_remove.extend(edges_ch6_remove)
+    all_new_edges.extend(get_edges_ch6_add(chapter_changes[6]-1))
+    all_edges_to_remove.extend(edges_ch6_remove)
 
-    if 7 in non_required_chapters:
-        all_new_edges.extend(get_edges_ch7_add(required_chapter_count))
-        all_edges_to_remove.extend(edges_ch7_remove)
+    all_new_edges.extend(get_edges_ch7_add(chapter_changes[7]-1))
+    all_edges_to_remove.extend(edges_ch7_remove)
 
     # Modify graph with all pending changes, if any
     if all_new_edges or all_edges_to_remove:

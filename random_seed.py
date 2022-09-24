@@ -60,6 +60,15 @@ class RandomSeed:
         print(f"Seed: {self.seed_value}")
         random.seed(self.seed_value)
 
+        starting_chapter, starting_map_value = self.init_starting_map(self.rando_settings)
+
+        # Randomize chapter difficulty / enemy stats if needed
+        self.enemy_stats, self.chapter_changes = get_shuffled_chapter_difficulty(
+            self.rando_settings.shuffle_chapter_difficulty,
+            self.rando_settings.progressive_scaling.get("value"),
+            starting_chapter
+        )
+
         # Prepare world graph if not provided
         if world_graph is None:
             print("Generating World Graph ...")
@@ -80,16 +89,7 @@ class RandomSeed:
         )
         world_graph = get_glitched_logic(world_graph, self.rando_settings.glitch_settings, self.rando_settings.bowsers_castle_mode["value"])
 
-        # Race Mode
-        # TODO: create a proper setting for this
-        race_chapters_not_required = [1, 2, 3, 4, 5, 6, 7]
-        race_chapters_required = []
-        for i in range(0, self.rando_settings.starway_spirits_needed["value"]):
-            chapter_index = random.randrange(0, len(race_chapters_not_required))
-            race_chapters_required.append(race_chapters_not_required.pop(chapter_index))
-        race_chapters_required.sort()
-        print("Race Mode Chapters: " + str(race_chapters_required))
-        world_graph = get_race_mode(world_graph, race_chapters_not_required, self.rando_settings.starway_spirits_needed["value"])
+        world_graph = get_race_mode(world_graph, self.chapter_changes)
 
         hidden_block_mode = self.rando_settings.hidden_block_mode["value"]
         if self.rando_settings.glitch_settings.knows_hidden_blocks["value"]:
@@ -99,7 +99,6 @@ class RandomSeed:
         # Item Placement
         for placement_attempt in range(1, 11):  # try 10 times
             try:
-                starting_chapter, starting_map_value = self.init_starting_map(self.rando_settings)
                 self.init_starting_partners(self.rando_settings)
 
                 # Pick seeds required for flower gate, if random
@@ -169,13 +168,6 @@ class RandomSeed:
 
         # Randomize blocks if needed
         self.placed_blocks = get_block_placement(self.rando_settings.shuffle_blocks)
-
-        # Randomize chapter difficulty / enemy stats if needed
-        self.enemy_stats, self.chapter_changes = get_shuffled_chapter_difficulty(
-            self.rando_settings.shuffle_chapter_difficulty,
-            self.rando_settings.progressive_scaling.get("value"),
-            starting_chapter
-        )
 
         # Randomize enemy battle formations
         if (   self.rando_settings.random_formations["value"]
